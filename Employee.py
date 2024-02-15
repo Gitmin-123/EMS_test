@@ -11,20 +11,42 @@ class EmployeeManagementSystem:
     def __init__(self):
         self.employees = []
 
-    
-    # Adding employee       
     def add_employee(self, name, age, emp_id, department):
+        #Exception for name must be string
+        if not isinstance(name, str):
+            raise TypeError("Name must be a string")
+        
+        #Exception for age must be int
+        if not isinstance(age, int):
+            raise TypeError("Age must be integers")
+        
+        #Exception for age must be int
+        if not isinstance(emp_id, int):
+            raise TypeError("ID must be integers")
+        
+        #Exception for age must be above 0 and below 60
+        if age < 0 or age >= 60:
+            raise ValueError("Age must be a non-negative integer below 60")
+        
+        #Exception for Id cannot be negative
+        if emp_id < 0:
+            raise ValueError("ID must be a non-negative integer")
+        
+        #Exception for department cannot be empty and should be within the category
+        if not department:
+            raise ValueError("Department cannot be empty")
+        if department not in ["Engineering", "HR", "Marketing", "Finance", "IT"]:
+            raise ValueError("Invalid department")
+
         employee = Employee(name, age, emp_id, department)
         self.employees.append(employee)
 
-    # Retreiveing employee by id
     def get_employee_by_id(self, emp_id):
         for employee in self.employees:
             if employee.emp_id == emp_id:
                 return employee
-        raise False
+        raise ValueError("Employee not found with ID: {}".format(emp_id))
 
-    # delete by employee id
     def delete_employee_by_id(self, emp_id):
         for employee in self.employees:
             if employee.emp_id == emp_id:
@@ -33,9 +55,10 @@ class EmployeeManagementSystem:
         return False
 
 
+
 class TestEmployeeManagementSystem(unittest.TestCase):
+    # Initialize the EmployeeManagementSystem and add initial employees
     def setUp(self):
-        # Initialize the EmployeeManagementSystem and add initial employees
         self.system = EmployeeManagementSystem()
         self.system.add_employee("Hasan Mubarak", 30, 1, "HR")
         self.system.add_employee("Jon Smith", 25, 2, "IT")
@@ -46,11 +69,13 @@ class TestEmployeeManagementSystem(unittest.TestCase):
         self.system.add_employee("Marker burg", 28, 3, "Marketing")
         self.assertEqual(len(self.system.employees), 3)
 
+    
     # Test retrieving an employee by ID
     def test_get_employee_by_id(self):
         employee = self.system.get_employee_by_id(1)
         self.assertIsNotNone(employee)
         self.assertEqual(employee.name, "Hasan Mubarak")
+
 
     # Test deleting an employee by ID
     def test_delete_employee_by_id(self):
@@ -58,32 +83,33 @@ class TestEmployeeManagementSystem(unittest.TestCase):
         self.assertEqual(len(self.system.employees), 1)
         self.assertFalse(self.system.delete_employee_by_id(999))
 
+
     # Test adding an employee with an invalid name
     def test_add_employee_invalid_name(self):
         with self.assertRaises(TypeError):
-            self.system.add_employee(123, 30, 4, "Finance")
-        self.assertEqual(len(self.system.employees), 2)
-    
-    
-    def test_add_get_delete_employee(self):
-        # Add an employee
-        self.system.add_employee("John Smith", 30, 3, "Engineering")  
+         self.system.add_employee(123, 30, 4, "Finance")
+         self.assertEqual(len(self.system.employees), 2)
 
-        # Retrieve the added employee
-        employee = self.system.get_employee_by_id(3)
+
+    # Test adding, retrieving, and deleting an employee
+    def test_delete_employee_by_id(self):
+        self.assertFalse(self.system.delete_employee_by_id(999))  # Test deleting non-existent employee
+
+    def test_add_get_delete_employee(self):
+      # Add an employee
+        self.system.add_employee("John Smith", 30, 3, "Engineering")
+
+      # Retrieve the added employee
+        employee = self.system.get_employee_by_id(3)  # Use ID 3
         self.assertIsNotNone(employee)
         self.assertEqual(employee.name, "John Smith")
 
-        # Delete the employee
-        self.assertTrue(self.system.delete_employee_by_id(1))
+    # Delete the employee
+        self.assertTrue(self.system.delete_employee_by_id(3)) 
 
-        # Verify the employee is deleted
+    # Verify the employee is deleted
         with self.assertRaises(ValueError):
-            self.system.get_employee_by_id(3)
-
+         self.system.get_employee_by_id(3)  # Use ID 3
 
 if __name__ == "__main__":
-    ems = EmployeeManagementSystem()
-    ems.add_employee('Ekram', 22, 1, 'IT')
-    employee = ems.get_employee_by_id(1)
-    print("Employee Name:", employee.name, ' department:',employee.department, ' age:',employee.age, ' emp_id:',employee.emp_id)
+    unittest.main()
