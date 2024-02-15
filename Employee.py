@@ -63,7 +63,23 @@ class TestEmployeeManagementSystem(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.system.add_employee(123, 30, 4, "Finance")
         self.assertEqual(len(self.system.employees), 2)
+    
+    
+    def test_add_get_delete_employee(self):
+        # Add an employee
+        self.system.add_employee("John Smith", 30, 3, "Engineering")  
 
+        # Retrieve the added employee
+        employee = self.system.get_employee_by_id(3)
+        self.assertIsNotNone(employee)
+        self.assertEqual(employee.name, "John Smith")
+
+        # Delete the employee
+        self.assertTrue(self.system.delete_employee_by_id(1))
+
+        # Verify the employee is deleted
+        with self.assertRaises(ValueError):
+            self.system.get_employee_by_id(3)
 
 
 if __name__ == "__main__":
